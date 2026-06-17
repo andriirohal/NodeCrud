@@ -1,0 +1,1 @@
+export { createProduct, getProducts, getProductById } from "./productRepository";

@@ -1,0 +1,1 @@
+export { getAllProductsController, addProductController, getProductByIdController } from "./productControllers";
