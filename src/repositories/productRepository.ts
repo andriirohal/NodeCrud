@@ -10,8 +10,8 @@ const findById = (products: Product[], id: string): Product | undefined => {
   return products.find((p) => p.id === id);
 }; 
 
+const isNonNegative = (n: number) => n >= 0;
 const isEmpty = (s: string) => !s.trim();
-const isPositive = (n: number) => n > 0;
 
 async function readProducts(): Promise<Product[]> {
   try {
@@ -24,10 +24,6 @@ async function readProducts(): Promise<Product[]> {
 
 async function writeProducts(products: Product[]) {
   await fs.writeFile(filePath, JSON.stringify(products, null, 2));
-};
-
-export async function getAllProducts(): Promise<Product[]> {
-  return readProducts();
 };
 
 export async function getProductById(id: string): Promise<Result<Product>> {
@@ -60,21 +56,21 @@ export async function createProduct(data: ProductInput): Promise<Result<Product>
   if(isEmpty(data.name)) {
     return {
       success: false,
-      error: "Product name must not be empty"
+      error: "Name must not be empty"
     };
   };
   
-  if(!isPositive(data.price)) {
+  if(!isNonNegative(data.price)) {
     return {
       success: false,
-      error: "Product price must be positive"
+      error: "Price must be 0 or greater"
     };
   };
   
-  if(!isPositive(data.stock)) {
+  if(!isNonNegative(data.stock)) {
     return {
       success: false,
-      error: "Product stock must be positive"
+      error: "Stock must be 0 or greater"
     };
   };
   
@@ -115,4 +111,60 @@ export async function deleteProduct(id: string): Promise<Result<Product>> {
     success: true,
     data: deleted
   };
+};
+
+export async function updateProduct(id: string, data: ProductInput): Promise<Result<Product>> {
+  const products = await readProducts();
+  const product = findById(products, id);
+
+  if(!product) {
+    return {
+      success: false,
+      error: "Product not found"
+    };
+  };
+
+  if(data.name !== undefined) {
+    if(isEmpty(data.name)) {
+      return {
+        success: false,
+        error: "Name must not be empty"
+      };
+    }; 
+
+    product.name = data.name;
+  };
+
+  if(data.price !== undefined) {
+    if(!isNonNegative(data.price)) {
+      return {
+        success: false,
+        error: "Price must be 0 or greater"
+      };
+    };
+
+    product.price = data.price;
+  };
+
+  if(data.stock !== undefined) {
+    if(!isNonNegative(data.stock)) {
+      return {
+        success: false,
+        error: "Stock must be 0 or greater"
+      };
+    };
+
+    product.stock = data.stock;
+  };
+
+  await writeProducts(products);
+
+  return {
+    success: true,
+    data: product
+  };
+};
+
+export async function getAllProducts(): Promise<Product[]> {
+  return readProducts();
 };

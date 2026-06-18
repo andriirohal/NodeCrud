@@ -1,1 +1,1 @@
-export { getAllProductsController, createProductController, getProductByIdController, deleteProductController } from "./productControllers";
+export { getAllProductsController, createProductController, getProductByIdController, deleteProductController, updateProductController } from "./productControllers";
