@@ -1,8 +1,7 @@
 import fs from "fs/promises";
-import crypto from "crypto";
 import path from "path";
 
-import type { Product, ProductInput, Result } from "../types";
+import { Product, ProductInput, Result } from "../types";
 
 const filePath = path.join(process.cwd(), "src/data/products.json");
 
@@ -17,7 +16,8 @@ async function readProducts(): Promise<Product[]> {
   try {
     const data = await fs.readFile(filePath, "utf-8");
     return data ? JSON.parse(data) : [];
-  } catch {
+  } catch(error) {
+    console.error("Failed to read products file", error);
     return [];
   };
 };
@@ -27,26 +27,19 @@ async function writeProducts(products: Product[]) {
 };
 
 export async function getProductById(id: string): Promise<Result<Product>> {
-  try {
-    const products = await readProducts();
-    const product = findById(products, id);
+  const products = await readProducts();
+  const product = findById(products, id);
 
-    if(!product) {
-      return {
-        success: false,
-        error: "Product not found"
-      };
-    };
-
-    return {
-      success: true,
-      data: product
-    };
-  } catch {
+  if(!product) {
     return {
       success: false,
-      error: "Could not get product"
+      error: "Product not found"
     };
+  };
+
+  return {
+    success: true,
+    data: product
   };
 };
 
