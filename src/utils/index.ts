@@ -1,1 +1,0 @@
-export { validateId } from "./validateId";

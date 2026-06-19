@@ -46,24 +46,31 @@ export async function getProductById(id: string): Promise<Result<Product>> {
 export async function createProduct(data: ProductInput): Promise<Result<Product>> {
   const products = await readProducts();
 
-  if(isEmpty(data.name)) {
+  if(data.name === undefined || data.price === undefined || data.stock === undefined) {
     return {
       success: false,
-      error: "Name must not be empty"
+      error: "Missing required fields"
+    };
+  };
+
+  if(typeof data.name !== "string" || isEmpty(data.name)) {
+    return {
+      success: false,
+      error: "Name is not valid"
     };
   };
   
-  if(!isNonNegative(data.price)) {
+  if(typeof data.price !== "number" || !isNonNegative(data.price)) {
     return {
       success: false,
-      error: "Price must be 0 or greater"
+      error: "Price is not valid"
     };
   };
   
-  if(!isNonNegative(data.stock)) {
+  if(typeof data.stock !== "number" || !isNonNegative(data.stock)) {
     return {
       success: false,
-      error: "Stock must be 0 or greater"
+      error: "Stock is not valid"
     };
   };
   
@@ -118,10 +125,10 @@ export async function updateProduct(id: string, data: ProductInput): Promise<Res
   };
 
   if(data.name !== undefined) {
-    if(isEmpty(data.name)) {
+    if(typeof data.name !== "string" || isEmpty(data.name)) {
       return {
         success: false,
-        error: "Name must not be empty"
+        error: "Name is not valid"
       };
     }; 
 
@@ -129,10 +136,10 @@ export async function updateProduct(id: string, data: ProductInput): Promise<Res
   };
 
   if(data.price !== undefined) {
-    if(!isNonNegative(data.price)) {
+    if(typeof data.price !== "number" || !isNonNegative(data.price)) {
       return {
         success: false,
-        error: "Price must be 0 or greater"
+        error: "Price is not valid"
       };
     };
 
@@ -140,10 +147,10 @@ export async function updateProduct(id: string, data: ProductInput): Promise<Res
   };
 
   if(data.stock !== undefined) {
-    if(!isNonNegative(data.stock)) {
+    if(typeof data.stock !== "number" || !isNonNegative(data.stock)) {
       return {
         success: false,
-        error: "Stock must be 0 or greater"
+        error: "Stock is not valid"
       };
     };
 

@@ -1,18 +1,17 @@
 import { Request, Response } from "express";
 
 import { createProduct, getAllProducts, getProductById, deleteProduct, updateProduct } from "../repositories";
-import { validateId } from "../utils";
 
 export const getProductByIdController = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = String(req.params.id);
 
-    if(!validateId(id)) {
+    if(!id?.trim()) {
       return res.status(400).json({
         success: false,
         error: "Invalid product ID"
       });
-    }; 
+    };
 
     const result = await getProductById(id);
 
@@ -33,8 +32,13 @@ export const getProductByIdController = async (req: Request, res: Response) => {
 
 export const createProductController = async (req: Request, res: Response) => {
   try {
-    const product = await createProduct(req.body);
-    return res.status(201).json(product);
+    const result = await createProduct(req.body);
+
+    if(!result.success) {
+      return res.status(400).json(result);
+    };
+
+    return res.status(201).json(result);
   } catch(error) {
     console.error(error);
 
@@ -47,9 +51,9 @@ export const createProductController = async (req: Request, res: Response) => {
 
 export const deleteProductController = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = String(req.params.id);
 
-    if(!validateId(id)) {
+    if(!id?.trim()) {
       return res.status(400).json({
         success: false,
         error: "Invalid product ID"
@@ -75,9 +79,9 @@ export const deleteProductController = async (req: Request, res: Response) => {
 
 export const updateProductController = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = String(req.params.id);
 
-    if(!validateId(id)) {
+    if(!id?.trim()) {
       return res.status(400).json({
         success: false,
         error: "Invalid product ID"
@@ -104,7 +108,12 @@ export const updateProductController = async (req: Request, res: Response) => {
 export const getAllProductsController = async (req: Request, res: Response) => {
   try {
     const products = await getAllProducts();
-    return res.status(200).json(products);
+    
+    return res.status(200).json({
+      success: true,
+      data: products
+    });
+  
   } catch(error) {
     console.error(error);
 
