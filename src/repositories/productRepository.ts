@@ -14,16 +14,11 @@ const isNonNegative = (n: number) => n >= 0;
 const isEmpty = (s: string) => !s.trim();
 
 async function readProducts(): Promise<Product[]> {
-  try {
-    const data = await fs.readFile(filePath, "utf-8");
+  const data = await fs.readFile(filePath, "utf-8");
     
-    if(!data.trim()) return [];
+  if(!data.trim()) return [];
     
-    return JSON.parse(data) as Product[];
-  } catch(error) {
-    console.error("Failed to read products file:", error);
-    throw error;
-  };
+  return JSON.parse(data) as Product[];
 };
 
 async function writeProducts(products: Product[]) {

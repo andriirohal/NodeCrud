@@ -25,7 +25,7 @@ export const getProductByIdController = async (req: Request, res: Response) => {
 
     return res.status(500).json({
       success: false,
-      error: "Failed to get product"
+      error: "Internal server error"
     });
   };
 };
@@ -44,7 +44,7 @@ export const createProductController = async (req: Request, res: Response) => {
 
     return res.status(500).json({
       success: false,
-      error: "Failed to create product"
+      error: "Internal server error"
     });
   };
 };
@@ -72,7 +72,7 @@ export const deleteProductController = async (req: Request, res: Response) => {
 
     return res.status(500).json({
       success: false,
-      error: "Failed to delete product"
+      error: "Internal server error"
     });
   };
 };
@@ -100,7 +100,7 @@ export const updateProductController = async (req: Request, res: Response) => {
 
     return res.status(500).json({
       success: false,
-      error: "Failed to update product"
+      error: "Internal server error"
     });
   };
 };
@@ -119,7 +119,7 @@ export const getAllProductsController = async (req: Request, res: Response) => {
 
     return res.status(500).json({
       success: false,
-      error: "Failed to get products"
+      error: "Internal server error"
     });
   };
 };

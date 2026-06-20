@@ -1,7 +1,6 @@
-import { Router } from "express";
-
 import { createProductController, getAllProductsController, getProductByIdController, deleteProductController, updateProductController } from "../controllers";
 
+import { Router } from "express";
 export const router = Router();
 
 router.get("/", getAllProductsController);
