@@ -4,9 +4,9 @@ import { createProduct, getAllProducts, getProductById, deleteProduct, updatePro
 
 export const getProductByIdController = async (req: Request, res: Response) => {
   try {
-    const id = String(req.params.id);
+    const id = req.params.id;
 
-    if(!id.trim()) {
+    if(!id || typeof id !== "string" || id.trim().length === 0) {
       return res.status(400).json({
         success: false,
         error: "Invalid product ID"
@@ -51,9 +51,9 @@ export const createProductController = async (req: Request, res: Response) => {
 
 export const deleteProductController = async (req: Request, res: Response) => {
   try {
-    const id = String(req.params.id);
+    const id = req.params.id;
 
-    if(!id.trim()) {
+    if(!id || typeof id !== "string" || id.trim().length === 0) {
       return res.status(400).json({
         success: false,
         error: "Invalid product ID"
@@ -79,9 +79,9 @@ export const deleteProductController = async (req: Request, res: Response) => {
 
 export const updateProductController = async (req: Request, res: Response) => {
   try {
-    const id = String(req.params.id);
+    const id = req.params.id;
 
-    if(!id.trim()) {
+    if(!id || typeof id !== "string" || id.trim().length === 0) {
       return res.status(400).json({
         success: false,
         error: "Invalid product ID"

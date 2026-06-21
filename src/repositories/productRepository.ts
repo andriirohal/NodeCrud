@@ -14,11 +14,13 @@ const isNonNegative = (n: number) => n >= 0;
 const isEmpty = (s: string) => !s.trim();
 
 async function readProducts(): Promise<Product[]> {
-  const data = await fs.readFile(filePath, "utf-8");
-    
-  if(!data.trim()) return [];
-    
-  return JSON.parse(data) as Product[];
+  try {
+    const data = await fs.readFile(filePath, "utf-8");
+    if(!data.trim()) return [];
+    return JSON.parse(data);
+  } catch {
+    return [];
+  };
 };
 
 async function writeProducts(products: Product[]) {
@@ -45,31 +47,31 @@ export async function getProductById(id: string): Promise<Result<Product>> {
 export async function createProduct(data: ProductInput): Promise<Result<Product>> {
   const products = await readProducts();
 
-  if(data.name === undefined || data.price === undefined || data.stock === undefined) {
+  if(data.name == null || data.price == null || data.stock == null) {
     return {
       success: false,
       error: "Missing required fields"
     };
   };
-
+  
   if(typeof data.name !== "string" || isEmpty(data.name)) {
     return {
       success: false,
-      error: "Name is not valid"
+      error: "Invalid product name"
     };
   };
   
   if(typeof data.price !== "number" || !isNonNegative(data.price)) {
     return {
       success: false,
-      error: "Price is not valid"
+      error: "Invalid product price"
     };
   };
   
   if(typeof data.stock !== "number" || !isNonNegative(data.stock)) {
     return {
       success: false,
-      error: "Stock is not valid"
+      error: "Invalid product stock"
     };
   };
   
@@ -112,7 +114,7 @@ export async function deleteProduct(id: string): Promise<Result<Product>> {
   };
 };
 
-export async function updateProduct(id: string, data: ProductInput): Promise<Result<Product>> {
+export async function updateProduct(id: string, data: Partial<ProductInput>): Promise<Result<Product>> {
   const products = await readProducts();
   const product = findById(products, id);
 
@@ -123,33 +125,33 @@ export async function updateProduct(id: string, data: ProductInput): Promise<Res
     };
   };
 
-  if(data.name !== undefined) {
+  if(data.name != null) {
     if(typeof data.name !== "string" || isEmpty(data.name)) {
       return {
         success: false,
-        error: "Name is not valid"
+        error: "Invalid product name"
       };
     }; 
 
     product.name = data.name;
   };
 
-  if(data.price !== undefined) {
+  if(data.price != null) {
     if(typeof data.price !== "number" || !isNonNegative(data.price)) {
       return {
         success: false,
-        error: "Price is not valid"
+        error: "Invalid product price"
       };
     };
 
     product.price = data.price;
   };
 
-  if(data.stock !== undefined) {
+  if(data.stock != null) {
     if(typeof data.stock !== "number" || !isNonNegative(data.stock)) {
       return {
         success: false,
-        error: "Stock is not valid"
+        error: "Invalid product stock"
       };
     };
 
