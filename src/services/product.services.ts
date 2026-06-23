@@ -1,29 +1,14 @@
-import fs from "fs/promises";
-import path from "path";
 import { randomUUID } from "crypto";
 
-import { Product, ProductInput, Result } from "../types";
-
-const filePath = path.join(process.cwd(), "src/data/products.json");
+import { Product, Result, ProductInput } from "../types";
+import { writeProducts, readProducts } from "../repositories";
 
 const findById = (products: Product[], id: string): Product | undefined => {
   return products.find((p) => p.id === id);
 }; 
 
-const isNonNegative = (n: number) => n >= 0;
-const isEmpty = (s: string) => !s.trim();
-
-async function readProducts(): Promise<Product[]> {
-  const data = await fs.readFile(filePath, "utf-8");
-    
-  if(!data.trim()) return [];
-  
-  return JSON.parse(data) as Product[];
-};
-
-async function writeProducts(products: Product[]) {
-  await fs.writeFile(filePath, JSON.stringify(products, null, 2));
-};
+const isValidNumber = (n: number) => typeof n === "number" && n >= 0;
+const isValidName = (s: string) => typeof s === "string" && s.trim().length > 0;
 
 export async function getProductById(id: string): Promise<Result<Product>> {
   const products = await readProducts();
@@ -51,22 +36,22 @@ export async function createProduct(data: ProductInput): Promise<Result<Product>
       error: "Missing required fields"
     };
   };
-  
-  if(typeof data.name !== "string" || isEmpty(data.name)) {
+
+  if(!isValidName(data.name)) {
     return {
       success: false,
       error: "Invalid product name"
     };
   };
   
-  if(typeof data.price !== "number" || !isNonNegative(data.price)) {
+  if(!isValidNumber(data.price)) {
     return {
       success: false,
       error: "Invalid product price"
     };
   };
   
-  if(typeof data.stock !== "number" || !isNonNegative(data.stock)) {
+  if(!isValidNumber(data.stock)) {
     return {
       success: false,
       error: "Invalid product stock"
@@ -75,7 +60,7 @@ export async function createProduct(data: ProductInput): Promise<Result<Product>
   
   const newProduct: Product = {
     id: randomUUID(),
-    name: data.name,
+    name: data.name.trim(),
     price: data.price,
     stock: data.stock
   };
@@ -124,18 +109,18 @@ export async function updateProduct(id: string, data: Partial<ProductInput>): Pr
   };
 
   if(data.name != null) {
-    if(typeof data.name !== "string" || isEmpty(data.name)) {
+    if(!isValidName(data.name)) {
       return {
         success: false,
         error: "Invalid product name"
       };
     }; 
 
-    product.name = data.name;
+    product.name = data.name.trim();
   };
 
   if(data.price != null) {
-    if(typeof data.price !== "number" || !isNonNegative(data.price)) {
+    if(!isValidNumber(data.price)) {
       return {
         success: false,
         error: "Invalid product price"
@@ -146,7 +131,7 @@ export async function updateProduct(id: string, data: Partial<ProductInput>): Pr
   };
 
   if(data.stock != null) {
-    if(typeof data.stock !== "number" || !isNonNegative(data.stock)) {
+    if(!isValidNumber(data.stock)) {
       return {
         success: false,
         error: "Invalid product stock"
@@ -164,6 +149,9 @@ export async function updateProduct(id: string, data: Partial<ProductInput>): Pr
   };
 };
 
-export async function getAllProducts(): Promise<Product[]> {
-  return readProducts();
+export async function getAllProducts(): Promise<Result<Product[]>> {
+  return {
+    success: true,
+    data: await readProducts()
+  };
 };

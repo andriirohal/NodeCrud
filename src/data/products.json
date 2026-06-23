@@ -1,8 +1,32 @@
 [
   {
-    "id": "62eb3a81-66fb-49c8-b201-f616ce5035a8",
-    "name": "Samsung galaxy S24",
+    "id": "1a290261-b3ce-467a-b983-f9235b4e7d86",
+    "name": "fwefef",
     "price": 20000,
-    "stock": 120
+    "stock": 10
+  },
+  {
+    "id": "79a45609-fc7e-488d-bdff-b96343ac8b48",
+    "name": "fwefef",
+    "price": 20000,
+    "stock": "10"
+  },
+  {
+    "id": "5f164497-25a3-49a0-b066-c569a84adeed",
+    "name": "fwefef",
+    "price": "20000",
+    "stock": "20"
+  },
+  {
+    "id": "12518310-58d5-4903-b24e-b782ff07ec91",
+    "name": "dwdwdw",
+    "price": 123,
+    "stock": 124
+  },
+  {
+    "id": "21deb976-7980-42ce-8725-7e4755d7152c",
+    "name": "dwdwdw",
+    "price": "123",
+    "stock": "1434"
   }
 ]

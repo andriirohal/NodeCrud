@@ -1,2 +1,1 @@
-export { Product, ProductInput } from "./productTypes";
-export { Result } from "./resultTypes";
+export { Product, ProductInput, Result } from "./product.types";

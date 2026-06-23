@@ -1,0 +1,1 @@
+export { validateId, errorHandler } from "./product.middlewares";

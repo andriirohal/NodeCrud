@@ -1,0 +1,1 @@
+export { updateProduct, deleteProduct, getAllProducts, getProductById, createProduct } from "./product.services";
