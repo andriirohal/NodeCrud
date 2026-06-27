@@ -1,1 +1,1 @@
-export { writeProducts, readProducts } from "./product.repositories";
+export { writeProducts, readProducts } from "./product.repository";
