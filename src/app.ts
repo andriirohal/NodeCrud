@@ -12,7 +12,7 @@ app.use(express.json());
 app.use("/products", router);
 
 app.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ status: "ok" });
+  res.sendStatus(200);
 });
 
 app.use(errorHandler);
