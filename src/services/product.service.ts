@@ -1,10 +1,7 @@
 import { randomUUID } from "crypto";
 
-import { Product, Result, ProductInput } from "../types";
-import { writeProducts, readProducts } from "../repositories";
-
-const findById = (products: Product[], id: string): Product | undefined => 
-  products.find((p) => p.id === id); 
+import { Product, ProductInput, Result } from "../types";
+import { pool } from "../config";
 
 const isValidPrice = (n: unknown): n is number => 
   typeof n === "number" && Number.isFinite(n) && n >= 0;
@@ -16,10 +13,9 @@ const isValidName = (s: unknown): s is string =>
   typeof s === "string" && s.trim().length > 0;
 
 export async function getProductById(id: string): Promise<Result<Product>> {
-  const products = await readProducts();
-  const product = findById(products, id);
+  const result = await pool.query("SELECT * FROM products WHERE id = $1", [id]);
 
-  if(!product) {
+  if(!result.rows[0]) {
     return {
       success: false,
       error: "Product not found"
@@ -28,28 +24,26 @@ export async function getProductById(id: string): Promise<Result<Product>> {
 
   return {
     success: true,
-    data: product
+    data: result.rows[0]
   };
 };
 
-export async function createProduct(data: ProductInput): Promise<Result<Product>> {
-  const products = await readProducts();
-
-  if(!isValidName(data.name)) {
+export async function createProduct(product: ProductInput): Promise<Result<Product>> {
+  if(!isValidName(product.name)) {
     return {
       success: false,
       error: "Invalid product name"
     };
   };
   
-  if(!isValidPrice(data.price)) {
+  if(!isValidPrice(product.price)) {
     return {
       success: false,
       error: "Invalid product price"
     };
   };
   
-  if(!isValidStock(data.stock)) {
+  if(!isValidStock(product.stock)) {
     return {
       success: false,
       error: "Invalid product stock"
@@ -58,97 +52,83 @@ export async function createProduct(data: ProductInput): Promise<Result<Product>
   
   const newProduct: Product = {
     id: randomUUID(),
-    name: data.name.trim(),
-    price: data.price,
-    stock: data.stock
+    name: product.name.trim(),
+    price: product.price,
+    stock: product.stock
   };
 
-  products.push(newProduct);
-  await writeProducts(products);
+  const result = await pool.query(
+    "INSERT INTO products (id, name, price, stock) VALUES ($1, $2, $3, $4) RETURNING *",
+    [newProduct.id, newProduct.name, newProduct.price, newProduct.stock]
+  );
 
   return {
     success: true,
-    data: newProduct
+    data: result.rows[0]
   };
 };
 
 export async function deleteProduct(id: string): Promise<Result<Product>> {
-  let products = await readProducts();
-  const product = findById(products, id);
+  const result = await pool.query("DELETE FROM products WHERE id = $1 RETURNING *", [id]);
 
-  if(!product) {
+  if(!result.rows[0]) {
     return {
       success: false,
       error: "Product not found"
     };
   };
-
-  products = products.filter((p) => p.id !== id);
-  await writeProducts(products);
 
   return {
     success: true,
-    data: product
+    data: result.rows[0]
   };
 };
 
-export async function updateProduct(id: string, data: Partial<ProductInput>): Promise<Result<Product>> {
-  const products = await readProducts();
-  const index = products.findIndex((p) => p.id === id);
-
-  if(index === -1) {
-    return {
-      success: false,
-      error: "Product not found"
-    };
-  };
-
-  if(data.name != null && !isValidName(data.name)) {
+export async function updateProduct(id: string, product: Partial<ProductInput>): Promise<Result<Product>> {
+  if(product.name != null && !isValidName(product.name)) {
     return {
       success: false,
       error: "Invalid product name"
     };
-  }; 
+  };
 
-  if(data.price != null && !isValidPrice(data.price)) {
+  if(product.price != null && !isValidPrice(product.price)) {
     return {
       success: false,
       error: "Invalid product price"
     };
   };
 
-  if(data.stock != null && !isValidStock(data.stock)) {
+  if(product.stock != null && !isValidStock(product.stock)) {
     return {
       success: false,
       error: "Invalid product stock"
     };
   };
 
-  const updatedProduct = {
-    ...products[index],
-    ...(data.name != null && {
-      name: data.name.trim()
-    }),
-    ...(data.price != null && {
-      price: data.price
-    }),
-    ...(data.stock != null && {
-      stock: data.stock
-    })
-  };
+  const result = await pool.query(
+    "UPDATE products SET name = COALESCE($2, name), price = COALESCE($3, price), stock = COALESCE($4, stock) WHERE id = $1 RETURNING *",
+    [id, product.name, product.price, product.stock]
+  );
 
-  products[index] = updatedProduct;
-  await writeProducts(products);
+  if(!result.rows[0]) {
+    return {
+      success: false,
+      error: "Product not found"
+    };
+  };
 
   return {
     success: true,
-    data: updatedProduct
+    data: result.rows[0]
   };
 };
 
 export async function getAllProducts(): Promise<Result<Product[]>> {
+  const result = await pool.query("SELECT * FROM products");
+  
   return {
     success: true,
-    data: await readProducts()
+    data: result.rows
   };
 };

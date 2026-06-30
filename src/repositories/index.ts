@@ -1,1 +1,0 @@
-export { writeProducts, readProducts } from "./product.repository";
