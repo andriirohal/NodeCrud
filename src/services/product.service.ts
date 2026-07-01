@@ -85,7 +85,9 @@ export async function deleteProduct(id: string): Promise<Result<Product>> {
 };
 
 export async function updateProduct(id: string, product: Partial<ProductInput>): Promise<Result<Product>> {
-  if(product.name != null && !isValidName(product.name)) {
+  const trimmedName = product.name != null ? product.name.trim() : undefined;
+  
+  if(product.name != null && !isValidName(trimmedName)) {
     return {
       success: false,
       error: "Invalid product name"
@@ -108,7 +110,7 @@ export async function updateProduct(id: string, product: Partial<ProductInput>):
 
   const result = await pool.query(
     "UPDATE products SET name = COALESCE($2, name), price = COALESCE($3, price), stock = COALESCE($4, stock) WHERE id = $1 RETURNING *",
-    [id, product.name, product.price, product.stock]
+    [id, trimmedName, product.price, product.stock]
   );
 
   if(!result.rows[0]) {
