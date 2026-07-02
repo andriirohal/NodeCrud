@@ -111,8 +111,7 @@ export async function updateProduct(id: string, product: Partial<ProductInput>):
     };
   };
 
-  const result = await pool.query(
-    "UPDATE products SET name = COALESCE($2, name), price = COALESCE($3, price), stock = COALESCE($4, stock) WHERE id = $1 RETURNING *",
+  const result = await pool.query("UPDATE products SET name = COALESCE($2, name), price = COALESCE($3, price), stock = COALESCE($4, stock) WHERE id = $1 RETURNING *",
     [id, trimmedName, product.price, product.stock]
   );
 
