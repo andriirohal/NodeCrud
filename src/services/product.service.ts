@@ -13,7 +13,9 @@ const isValidName = (s: unknown): s is string =>
   typeof s === "string" && s.trim().length > 0;
 
 export async function getProductById(id: string): Promise<Result<Product>> {
-  const result = await pool.query("SELECT * FROM products WHERE id = $1", [id]);
+  const result = await pool.query("SELECT * FROM products WHERE id = $1", 
+    [id]
+  );
 
   if(!result.rows[0]) {
     return {
@@ -57,8 +59,7 @@ export async function createProduct(product: ProductInput): Promise<Result<Produ
     stock: product.stock
   };
 
-  const result = await pool.query(
-    "INSERT INTO products (id, name, price, stock) VALUES ($1, $2, $3, $4) RETURNING *",
+  const result = await pool.query("INSERT INTO products (id, name, price, stock) VALUES ($1, $2, $3, $4) RETURNING *",
     [newProduct.id, newProduct.name, newProduct.price, newProduct.stock]
   );
 
@@ -69,7 +70,9 @@ export async function createProduct(product: ProductInput): Promise<Result<Produ
 };
 
 export async function deleteProduct(id: string): Promise<Result<Product>> {
-  const result = await pool.query("DELETE FROM products WHERE id = $1 RETURNING *", [id]);
+  const result = await pool.query("DELETE FROM products WHERE id = $1 RETURNING *", 
+    [id]
+  );
 
   if(!result.rows[0]) {
     return {
