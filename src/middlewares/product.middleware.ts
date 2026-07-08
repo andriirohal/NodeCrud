@@ -15,7 +15,7 @@ export const validateId = (req: Request<{id: string}>, res: Response, next: Next
 };
 
 export const errorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(error.message);
+  console.error(error.stack ?? error.message);
 
   return res.status(500).json({
     success: false,
