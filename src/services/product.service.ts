@@ -87,7 +87,7 @@ export async function deleteProduct(id: string): Promise<Result<Product>> {
 };
 
 export async function updateProduct(id: string, product: Partial<ProductInput>): Promise<Result<Product>> {
-  const trimmedName = product.name != null ? product.name.trim() : undefined;
+  const trimmedName = typeof product.name === "string" ? product.name.trim() : undefined;
   
   if(product.name != null && !isValidName(trimmedName)) {
     return {

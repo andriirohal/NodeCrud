@@ -48,7 +48,7 @@ export const updateProductController = async (req: Request<{id: string}>, res: R
   };
 };
 
-export const getAllProductsController = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllProductsController = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await getAllProducts();   
     return res.status(result.status).json(result);
