@@ -1,5 +1,5 @@
 {
-  "name": "express_crud_service",
+  "name": "CrudService",
   "version": "1.0.0",
   "main": "dist/server.js",
   "type": "commonjs",
