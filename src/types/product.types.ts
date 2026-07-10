@@ -7,16 +7,4 @@ export type Product = {
 
 export type ProductInput = Omit<Product, "id">;
 
-type SuccessResult<D> = {
-  success: true;
-  data: D;
-  status: number;
-};
-
-type FailureResult = {
-  success: false;
-  error: string;
-  status: number;
-};
-
-export type Result<D> = SuccessResult<D> | FailureResult;
+export type Result<D> = { success: true; data: D; status: number } | { success: false; error: string; status: number };
