@@ -1,5 +1,6 @@
+import type { Pool } from "pg";
+
 import type { Product, ProductInput, Result } from "../types";
-import { pool } from "../config";
 
 const isValidPrice = (price: unknown): price is number =>
   typeof price === "number" && Number.isFinite(price) && price >= 0;
@@ -10,7 +11,7 @@ const isValidStock = (stock: unknown): stock is number =>
 const isValidName = (name: unknown): name is string =>
   typeof name === "string" && name.trim().length > 0;
 
-export async function createProduct(product: ProductInput): Promise<Result<Product>> {
+export async function createProduct(pool: Pool, product: ProductInput): Promise<Result<Product>> {
   if (!isValidName(product.name)) {
     return {
       success: false,
@@ -46,7 +47,7 @@ export async function createProduct(product: ProductInput): Promise<Result<Produ
   };
 };
 
-export async function deleteProduct(id: string): Promise<Result<Product>> {
+export async function deleteProduct(pool: Pool, id: string): Promise<Result<Product>> {
   const result = await pool.query("DELETE FROM products WHERE id = $1 RETURNING *",
     [id]
   );
@@ -68,7 +69,7 @@ export async function deleteProduct(id: string): Promise<Result<Product>> {
   };
 };
 
-export async function getProductById(id: string): Promise<Result<Product>> {
+export async function getProductById(pool: Pool, id: string): Promise<Result<Product>> {
   const result = await pool.query("SELECT * FROM products WHERE id = $1",
     [id]
   );
@@ -90,7 +91,7 @@ export async function getProductById(id: string): Promise<Result<Product>> {
   };
 };
 
-export async function updateProduct(id: string, product: Partial<ProductInput>): Promise<Result<Product>> {
+export async function updateProduct(pool: Pool, id: string, product: Partial<ProductInput>): Promise<Result<Product>> {
   const trimmedName = typeof product.name === "string" ? product.name.trim() : undefined;
 
   if (product.name != null && !isValidName(trimmedName)) {
@@ -138,7 +139,7 @@ export async function updateProduct(id: string, product: Partial<ProductInput>):
   };
 };
 
-export async function getAllProducts(limit = 10, offset = 0): Promise<Result<Product[]>> {
+export async function getAllProducts(pool: Pool, limit = 10, offset = 0): Promise<Result<Product[]>> {
   const result = await pool.query("SELECT * FROM products ORDER BY name LIMIT $1 OFFSET $2",
     [limit, offset]
   );
