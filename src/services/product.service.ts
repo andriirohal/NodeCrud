@@ -1,15 +1,7 @@
 import type { Pool } from "pg";
 
 import type { Product, ProductInput, Result } from "../types";
-
-const isValidPrice = (price: unknown): price is number =>
-  typeof price === "number" && Number.isFinite(price) && price >= 0;
-
-const isValidStock = (stock: unknown): stock is number =>
-  typeof stock === "number" && Number.isInteger(stock) && stock >= 0;
-
-const isValidName = (name: unknown): name is string =>
-  typeof name === "string" && name.trim().length > 0;
+import { isValidName, isValidPrice, isValidStock } from "../helpers";
 
 export async function createProduct(pool: Pool, product: ProductInput): Promise<Result<Product>> {
   if (!isValidName(product.name)) {
