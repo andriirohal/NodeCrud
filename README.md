@@ -81,30 +81,6 @@ DB_PORT=5432
 
 ---
 
-## 🔌 Database Connection
-
-Create a PostgreSQL connection pool:
-
-```ts
-// src/config/pool.ts
-
-import { Pool } from "pg";
-
-const PORT = Number(process.env.PGPORT);
-
-export const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  port: Number.isFinite(PORT) ? PORT : 5432
-});
-```
-
-The `pg` package provides a connection pool used throughout the application to execute SQL queries.
-
----
-
 ## ⚙️ Installation
 
 Install dependencies:
