@@ -49,9 +49,12 @@ export const updateProductController = async (req: Request<{id: string}>, res: R
   };
 };
 
-export const getAllProductsController = async (_req: Request, res: Response, next: NextFunction) => {
+export const getAllProductsController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await services.getAllProducts(pool);   
+    const limit = Number(req.query.limit) ?? 10;
+    const offset = Number(req.query.offset) ?? 0;
+
+    const result = await services.getAllProducts(pool, limit, offset);   
     return res.status(result.status).json(result);
   
   } catch(error) {

@@ -56,9 +56,9 @@ Create the products table:
 ```sql
 CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL CHECK (char_length(trim(name)) > 0),
+  name TEXT NOT NULL UNIQUE CHECK (char_length(trim(name)) > 0),
   price NUMERIC(10, 2) NOT NULL CHECK (price >= 0),
-  stock INTEGER NOT NULL CHECK (stock >= 0)
+  stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0)
 );
 ```
 
@@ -72,36 +72,12 @@ npm install -D @types/pg
 Create a `.env` file:
 
 ```env
-DB_HOST=localhost
-DB_USER=postgres
-DB_PASSWORD=password
-DB_NAME=products_db
-DB_PORT=5432
+PGUSER=postgres
+PGHOST=localhost
+PGPASSWORD=password
+PGDATABASE=products_db
+PGPORT=5432
 ```
-
----
-
-## 🔌 Database Connection
-
-Create a PostgreSQL connection pool:
-
-```ts
-// src/config/pool.ts
-
-import { Pool } from "pg";
-
-const PORT = Number(process.env.PGPORT);
-
-export const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  port: Number.isFinite(PORT) ? PORT : 5432
-});
-```
-
-The `pg` package provides a connection pool used throughout the application to execute SQL queries.
 
 ---
 

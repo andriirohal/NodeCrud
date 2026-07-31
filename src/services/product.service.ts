@@ -28,7 +28,7 @@ export async function createProduct(pool: Pool, product: ProductInput): Promise<
     };
   };
 
-  const result = await pool.query("INSERT INTO products (name, price, stock) VALUES ($1, $2, $3) RETURNING *",
+  const result = await pool.query<Product>("INSERT INTO products (name, price, stock) VALUES ($1, $2, $3) RETURNING id, name, price, stock",
     [product.name.trim(), product.price, product.stock]
   );
 
@@ -40,7 +40,7 @@ export async function createProduct(pool: Pool, product: ProductInput): Promise<
 };
 
 export async function deleteProduct(pool: Pool, id: string): Promise<Result<Product>> {
-  const result = await pool.query("DELETE FROM products WHERE id = $1 RETURNING *",
+  const result = await pool.query<Product>("DELETE FROM products WHERE id = $1 RETURNING id, name, price, stock",
     [id]
   );
 
@@ -62,7 +62,7 @@ export async function deleteProduct(pool: Pool, id: string): Promise<Result<Prod
 };
 
 export async function getProductById(pool: Pool, id: string): Promise<Result<Product>> {
-  const result = await pool.query("SELECT * FROM products WHERE id = $1",
+  const result = await pool.query<Product>("SELECT id, name, price, stock FROM products WHERE id = $1",
     [id]
   );
 
@@ -83,10 +83,10 @@ export async function getProductById(pool: Pool, id: string): Promise<Result<Pro
   };
 };
 
-export async function updateProduct(pool: Pool, id: string, product: Partial<ProductInput>): Promise<Result<Product>> {
-  const trimmedName = typeof product.name === "string" ? product.name.trim() : undefined;
+export async function updateProduct(pool: Pool, id: string, input: Partial<ProductInput>): Promise<Result<Product>> {
+  const trimmedName = typeof input.name === "string" ? input.name.trim() : undefined;
 
-  if (product.name != null && !isValidName(trimmedName)) {
+  if (input.name != null && !isValidName(trimmedName)) {
     return {
       success: false,
       error: "Invalid product name",
@@ -94,7 +94,7 @@ export async function updateProduct(pool: Pool, id: string, product: Partial<Pro
     };
   };
 
-  if (product.price != null && !isValidPrice(product.price)) {
+  if (input.price != null && !isValidPrice(input.price)) {
     return {
       success: false,
       error: "Invalid product price",
@@ -102,7 +102,7 @@ export async function updateProduct(pool: Pool, id: string, product: Partial<Pro
     };
   };
 
-  if (product.stock != null && !isValidStock(product.stock)) {
+  if (input.stock != null && !isValidStock(input.stock)) {
     return {
       success: false,
       error: "Invalid product stock",
@@ -110,13 +110,13 @@ export async function updateProduct(pool: Pool, id: string, product: Partial<Pro
     };
   };
 
-  const result = await pool.query("UPDATE products SET name = COALESCE($2, name), price = COALESCE($3, price), stock = COALESCE($4, stock) WHERE id = $1 RETURNING *",
-    [id, trimmedName, product.price, product.stock]
+  const result = await pool.query<Product>("UPDATE products SET name = COALESCE($2, name), price = COALESCE($3, price), stock = COALESCE($4, stock) WHERE id = $1 RETURNING id, name, price, stock",
+    [id, trimmedName, input.price, input.stock]
   );
 
-  const updatedProduct = result.rows[0];
+  const product = result.rows[0];
 
-  if (!updatedProduct) {
+  if (!product) {
     return {
       success: false,
       error: "Product not found",
@@ -126,14 +126,17 @@ export async function updateProduct(pool: Pool, id: string, product: Partial<Pro
 
   return {
     success: true,
-    data: updatedProduct,
+    data: product,
     status: 200
   };
 };
 
-export async function getAllProducts(pool: Pool, limit = 10, offset = 0): Promise<Result<Product[]>> {
-  const result = await pool.query("SELECT * FROM products ORDER BY name LIMIT $1 OFFSET $2",
-    [limit, offset]
+export async function getAllProducts(pool: Pool, limit: number, offset: number): Promise<Result<Product[]>> {
+  const normalizedLimit = limit <= 0 ? 10 : Math.min(limit, 100);
+  const normalizedOffset = offset < 0 ? 0 : offset;
+  
+  const result = await pool.query<Product>("SELECT id, name, price, stock FROM products ORDER BY name LIMIT $1 OFFSET $2",
+    [normalizedLimit, normalizedOffset]
   );
 
   return {
