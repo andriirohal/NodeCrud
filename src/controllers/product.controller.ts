@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import * as services from "../services";
 import { pool } from "../config";
 
-export const getProductByIdController = async (req: Request<{id: string}>, res: Response, next: NextFunction) => {
+export async function getProductByIdController(req: Request<{id: string}>, res: Response, next: NextFunction) {
   try {
     const id = req.params.id;
 
@@ -15,7 +15,7 @@ export const getProductByIdController = async (req: Request<{id: string}>, res: 
   };
 };
 
-export const createProductController = async (req: Request, res: Response, next: NextFunction) => {
+export async function createProductController(req: Request, res: Response, next: NextFunction) {
   try {
     const result = await services.createProduct(pool, req.body);
     return res.status(result.status).json(result);
@@ -25,7 +25,7 @@ export const createProductController = async (req: Request, res: Response, next:
   };
 };
 
-export const deleteProductController = async (req: Request<{id: string}>, res: Response, next: NextFunction) => {
+export async function deleteProductController(req: Request<{id: string}>, res: Response, next: NextFunction) {
   try {
     const id = req.params.id;
 
@@ -37,7 +37,7 @@ export const deleteProductController = async (req: Request<{id: string}>, res: R
   };
 };
 
-export const updateProductController = async (req: Request<{id: string}>, res: Response, next: NextFunction) => {
+export async function updateProductController(req: Request<{id: string}>, res: Response, next: NextFunction) {
   try {
     const id = req.params.id;
 
@@ -49,7 +49,7 @@ export const updateProductController = async (req: Request<{id: string}>, res: R
   };
 };
 
-export const getAllProductsController = async (req: Request, res: Response, next: NextFunction) => {
+export async function getAllProductsController(req: Request, res: Response, next: NextFunction) {
   try {
     const limit = Number(req.query.limit) ?? 10;
     const offset = Number(req.query.offset) ?? 0;
