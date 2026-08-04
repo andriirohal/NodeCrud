@@ -1,1 +1,1 @@
-export { validateId, errorHandler } from "./product.middleware";
+export { validateId, uniqueHandler, errorHandler } from "./product.middleware";

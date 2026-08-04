@@ -21,5 +21,5 @@ export function isValidName(name: unknown): name is string {
     return false;
   };
 
-  return name === name.trim() && validator.isLength(name.trim(), { min: 1 });
+  return name === name.trim() && validator.isLength(name, { min: 1 });
 };

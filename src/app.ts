@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 
 import { router } from "./routes";
-import { errorHandler } from "./middlewares";
+import { errorHandler, uniqueHandler } from "./middlewares";
 
 export const app = express();
 
@@ -15,4 +15,4 @@ app.get("/", (_req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
-app.use(errorHandler);
+app.use(uniqueHandler, errorHandler);
