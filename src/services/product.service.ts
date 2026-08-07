@@ -134,8 +134,8 @@ export async function updateProduct(pool: Pool, id: string, input: Partial<Updat
 };
 
 export async function getAllProducts(pool: Pool, limit: number, offset: number): Promise<Result<Product[]>> {
-  const normalizedLimit = limit <= 0 ? 10 : Math.min(limit, 100);
-  const normalizedOffset = Math.max(0, offset);
+  const normalizedLimit = !Number.isFinite(limit) || limit <= 0 ? 10 : Math.min(limit, 100);
+  const normalizedOffset =  !Number.isFinite(offset) ? 0 : Math.max(0, offset);
   
   const result = await pool.query("SELECT id, name, price, stock FROM products ORDER BY name LIMIT $1 OFFSET $2",
     [normalizedLimit, normalizedOffset]
