@@ -56,7 +56,7 @@ Create the products table:
 ```sql
 CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL UNIQUE CHECK (char_length(trim(name)) > 0),
+  name TEXT NOT NULL UNIQUE CHECK (char_length(name) > 0 AND name = trim(name)),
   price NUMERIC(10, 2) NOT NULL CHECK (price >= 0),
   stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0)
 );
