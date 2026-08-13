@@ -5,7 +5,7 @@ export function isValidPrice(price: unknown): price is number {
     return false;
   };
   
-  return Number.isFinite(price) && price >= 0;
+  return Number.isInteger(price) && price >= 0;
 };
 
 export function isValidStock(stock: unknown): stock is number {
