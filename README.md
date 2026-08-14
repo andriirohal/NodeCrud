@@ -127,7 +127,7 @@ Example response:
 {
   "id": "c7a2d9f4-8c1d-4a5a-8b67-1d2e3f4a5b6c",
   "name": "Laptop",
-  "price": "1399.99",
+  "price": "1399.00",
   "stock": 10
 }
 ```

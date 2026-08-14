@@ -21,7 +21,7 @@ export function uniqueHandler(error: unknown, _req: Request, res: Response, next
   if(err.code === "23505") {
     return res.status(409).json({
       success: false,
-      error: "Product already exists",
+      error: "This product name already exists",
       status: 409
     });
   };
