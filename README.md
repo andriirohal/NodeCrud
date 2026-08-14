@@ -57,7 +57,7 @@ Create the products table:
 CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE CHECK (char_length(name) > 0 AND name = trim(name)),
-  price INTEGER NOT NULL CHECK (price > 0),
+  price NUMERIC(10, 2) NOT NULL CHECK (price > 0),
   stock INTEGER NOT NULL CHECK (stock >= 0)
 );
 ```
@@ -127,7 +127,7 @@ Example response:
 {
   "id": "c7a2d9f4-8c1d-4a5a-8b67-1d2e3f4a5b6c",
   "name": "Laptop",
-  "price": 1399,
+  "price": "1399.99",
   "stock": 10
 }
 ```
