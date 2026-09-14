@@ -72,11 +72,7 @@ npm install -D @types/pg
 Create a `.env` file:
 
 ```env
-PGUSER=postgres
-PGHOST=localhost
-PGPASSWORD=password
-PGDATABASE=products_db
-PGPORT=5432
+DATABASE_URL="postgres://postgres:password@localhost:5432/products_db"
 ```
 
 ---

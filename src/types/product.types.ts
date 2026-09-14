@@ -17,4 +17,4 @@ export type UpdateProductInput = {
   stock: number | null;
 };
 
-export type Result<D> = { success: true; data: D; status: number; } | { success: false; error: string; status: number; };
+export type Result<T> = { success: true; data: T; status: number; } | { success: false; error: string; status: number; };

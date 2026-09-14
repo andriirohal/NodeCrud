@@ -5,7 +5,7 @@ import { pool } from "../config";
 
 export async function getProductByIdController(req: Request<{ id: string }>, res: Response, next: NextFunction) {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
     const result = await services.getProductById(pool, id);
     return res.status(result.status).json(result);
@@ -27,7 +27,7 @@ export async function createProductController(req: Request, res: Response, next:
 
 export async function deleteProductController(req: Request<{ id: string }>, res: Response, next: NextFunction) {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
     const result = await services.deleteProduct(pool, id);
     return res.status(result.status).json(result);
@@ -39,7 +39,7 @@ export async function deleteProductController(req: Request<{ id: string }>, res:
 
 export async function updateProductController(req: Request<{ id: string }>, res: Response, next: NextFunction) {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
     const result = await services.updateProduct(pool, id, req.body);
     return res.status(result.status).json(result);

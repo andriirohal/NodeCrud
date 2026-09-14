@@ -16,12 +16,15 @@ export function validateId(req: Request<{ id: string }>, res: Response, next: Ne
 };
 
 export function uniqueHandler(error: unknown, _req: Request, res: Response, next: NextFunction) {
-  const err = error as { code?: string };
+  const err = error as { 
+    code?: string;
+    constraint?: string;
+  };
 
-  if(err.code === "23505") {
+  if(err.code === "23505" && err.constraint === "products_name_unique") {
     return res.status(409).json({
       success: false,
-      error: "This product name already exists",
+      error: "A product with this name already exists",
       status: 409
     });
   };
