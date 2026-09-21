@@ -1,11 +1,9 @@
-import validator from "validator";
-
 export function isValidName(name: unknown): name is string {
   if(typeof name !== "string") {
     return false;
   };
 
-  return name.trim().length > 0;
+  return name.length > 0 && name === name.trim();
 };
 
 export function isValidPrice(price: unknown): price is number {
