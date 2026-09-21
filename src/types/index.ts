@@ -1,1 +1,1 @@
-export { Product, CreateProductInput, UpdateProductInput, Result } from "./product.types";
+export type { Product, CreateProductInput, UpdateProductInput, Result } from "./product.types";

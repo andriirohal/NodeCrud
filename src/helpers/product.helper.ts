@@ -5,7 +5,7 @@ export function isValidName(name: unknown): name is string {
     return false;
   };
 
-  return name === name.trim() && validator.isLength(name, { min: 1 });
+  return name.trim().length > 0;
 };
 
 export function isValidPrice(price: unknown): price is number {

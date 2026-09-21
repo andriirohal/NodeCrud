@@ -17,4 +17,16 @@ export type UpdateProductInput = {
   stock: number | null;
 };
 
-export type Result<T> = { success: true; data: T; status: number; } | { success: false; error: string; status: number; };
+type Success<T> = {
+  success: true;
+  data: T;
+  status: number;
+};
+
+type Failure = {
+  success: false;
+  error: string;
+  status: number;
+};
+
+export type Result<T> = Success<T> | Failure;
