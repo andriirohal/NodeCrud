@@ -3,7 +3,7 @@ export function isValidName(name: unknown): name is string {
     return false;
   };
 
-  return name.length > 0 && name === name.trim();
+  return name === name.trim() && name.length > 0;
 };
 
 export function isValidPrice(price: unknown): price is number {
