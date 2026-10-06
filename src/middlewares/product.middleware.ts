@@ -1,10 +1,11 @@
 import type { Request, Response, NextFunction } from "express";
 
-export function validateId(req: Request<{ id: string; }>, res: Response, next: NextFunction) {
-  const UUID_REDEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  const id = req.params.id;
+import validator from "validator";
+
+export function validateId(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+  const { id } = req.params;
   
-  if(!UUID_REDEX.test(id)) {
+  if(!validator.isUUID(id)) {
     return res.status(400).json({
       success: false,
       error: "Invalid product ID",

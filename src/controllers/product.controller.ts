@@ -3,7 +3,9 @@ import type { Request, Response, NextFunction } from "express";
 import * as services from "../services";
 import { pool } from "../config";
 
-export async function getProductByIdController(req: Request<{ id: string; }>, res: Response, next: NextFunction) {
+import type { CreateProductInput, UpdateProductInput } from "../types";
+
+export async function getProductByIdController(req: Request<{ id: string }>, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
 
@@ -15,7 +17,7 @@ export async function getProductByIdController(req: Request<{ id: string; }>, re
   };
 };
 
-export async function createProductController(req: Request, res: Response, next: NextFunction) {
+export async function createProductController(req: Request<{}, {}, CreateProductInput>, res: Response, next: NextFunction) {
   try {
     const result = await services.createProduct(pool, req.body);
     return res.status(result.status).json(result);
@@ -25,7 +27,7 @@ export async function createProductController(req: Request, res: Response, next:
   };
 };
 
-export async function deleteProductController(req: Request<{ id: string; }>, res: Response, next: NextFunction) {
+export async function deleteProductController(req: Request<{ id: string }>, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
 
@@ -37,7 +39,7 @@ export async function deleteProductController(req: Request<{ id: string; }>, res
   };
 };
 
-export async function updateProductController(req: Request<{ id: string; }>, res: Response, next: NextFunction) {
+export async function updateProductController(req: Request<{ id: string }, {}, UpdateProductInput>, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
 

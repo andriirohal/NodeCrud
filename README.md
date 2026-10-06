@@ -107,7 +107,7 @@ docker compose down -v
 
 ## 🗄️ Database
 
-PostgreSQL is configured automatically by Docker Compose with:
+The PostgreSQL configuration is stored in the `.env` file:
 
 ```env
 POSTGRES_USER=andrii
