@@ -1,6 +1,6 @@
 # 🧩 Node CRUD
 
-A REST API built with Node.js, Express, and TypeScript, featuring a clean layered architecture and PostgreSQL as the persistence layer.
+A REST API built with Node.js, Express, and TypeScript, featuring a clean layered architecture, PostgreSQL persistence, and Docker Compose for containerized development.
 
 ---
 
@@ -13,6 +13,8 @@ A REST API built with Node.js, Express, and TypeScript, featuring a clean layere
 - Delete product by ID
 - Type-safe with TypeScript
 - PostgreSQL persistence
+- Dockerized backend and database
+- Persistent PostgreSQL data with Docker volumes
 
 ---
 
@@ -23,6 +25,8 @@ A REST API built with Node.js, Express, and TypeScript, featuring a clean layere
 - TypeScript
 - PostgreSQL
 - pg (node-postgres)
+- Docker
+- Docker Compose
 
 ---
 
@@ -43,36 +47,27 @@ src/
 
 ---
 
-## 🗄️ Database Setup
+## 🐳 Docker Setup
 
-Create a PostgreSQL database:
+The application uses Docker Compose to run the backend and PostgreSQL database as separate containers.
 
-```sql
-CREATE DATABASE products_db;
+```txt
+Docker Compose
+│
+├── backend
+│   └── Node.js + Express
+│       └── port 8080
+│
+└── db
+    └── PostgreSQL
+        └── port 5432
 ```
 
-Create the products table:
+The PostgreSQL database uses a Docker volume to persist data between container restarts.
 
-```sql
-CREATE TABLE products (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL UNIQUE CHECK (char_length(name) > 0 AND name = trim(name)),
-  price NUMERIC(10, 2) NOT NULL CHECK (price > 0),
-  stock INTEGER NOT NULL CHECK (stock >= 0)
-);
-```
-
-Install PostgreSQL driver:
-
-```console
-npm install pg
-npm install -D @types/pg
-```
-
-Create a `.env` file:
-
-```env
-DATABASE_URL="postgres://postgres:password@localhost:5432/products_db"
+```yaml
+volumes:
+  - postgres_data:/var/lib/postgresql
 ```
 
 ---
@@ -85,22 +80,70 @@ Install dependencies:
 npm install
 ```
 
-Start development server:
-
-```console
-npm run dev
-```
-
 Build the project:
 
 ```console
 npm run build
 ```
 
-Start production server:
+---
+
+## 🐳 Run with Docker
+
+Build and start the containers:
 
 ```console
-npm start
+docker compose up --build
+```
+
+This starts:
+
+- Node.js backend on `http://localhost:8080`
+- PostgreSQL database on `localhost:5432`
+
+The backend connects to PostgreSQL using the Docker service name:
+
+```env
+DATABASE_URL=postgres://andrii:password@db:5432/products_db
+```
+
+Stop the containers:
+
+```console
+docker compose down
+```
+
+Stop the containers and remove the PostgreSQL volume:
+
+```console
+docker compose down -v
+```
+
+---
+
+## 🗄️ Database
+
+PostgreSQL is configured automatically by Docker Compose with:
+
+```env
+POSTGRES_USER=andrii
+POSTGRES_PASSWORD=password
+POSTGRES_DB=products_db
+```
+
+The products table:
+
+```sql
+CREATE TABLE products (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL UNIQUE,
+  price NUMERIC(10,2) NOT NULL CHECK (price > 0),
+  stock INTEGER NOT NULL CHECK (stock >= 0),
+  "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT products_name_check CHECK (
+    char_length(name) > 0 AND name = TRIM(name)
+  )
+);
 ```
 
 ---

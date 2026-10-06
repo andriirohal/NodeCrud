@@ -1,6 +1,7 @@
 import type { Pool } from "pg";
 
 import type { Product, CreateProductInput, UpdateProductInput, Result } from "../types";
+
 import { isValidName, isValidPrice, isValidStock } from "../helpers";
 
 export async function createProduct(pool: Pool, input: CreateProductInput): Promise<Result<Product>> {
