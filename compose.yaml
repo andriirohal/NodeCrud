@@ -9,7 +9,7 @@ services:
       - db
 
   db: 
-    image: postgres:latest
+    image: postgres:18
     
     environment:
       - POSTGRES_USER=andrii
@@ -18,9 +18,10 @@ services:
 
     volumes:
       - postgres_data:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
 volumes:
   postgres_data:
