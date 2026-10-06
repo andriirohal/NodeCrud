@@ -72,28 +72,12 @@ volumes:
 
 ---
 
-## ⚙️ Installation
-
-Install dependencies:
-
-```console
-npm install
-```
-
-Build the project:
-
-```console
-npm run build
-```
-
----
-
 ## 🐳 Run with Docker
 
 Build and start the containers:
 
 ```console
-docker compose up --build
+docker compose up
 ```
 
 This starts:
