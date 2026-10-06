@@ -7,11 +7,11 @@ export function isValidName(name: unknown): name is string {
 };
 
 export function isValidPrice(price: unknown): price is number {
-  if(typeof price !== "number") {
+  if(typeof price !== "number" || !Number.isFinite(price)) {
     return false;
   };
   
-  return Number.isInteger(price) && price > 0;
+  return Math.round(price * 100) / 100 === price && price > 0;
 };
 
 export function isValidStock(stock: unknown): stock is number {
