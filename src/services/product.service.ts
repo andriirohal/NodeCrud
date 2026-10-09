@@ -1,7 +1,6 @@
 import type { Pool } from "pg";
 
 import type { Product, CreateProductInput, UpdateProductInput, Result } from "../types";
-
 import { isValidName, isValidPrice, isValidStock } from "../helpers";
 
 export async function createProduct(pool: Pool, input: CreateProductInput): Promise<Result<Product>> {
@@ -31,7 +30,7 @@ export async function createProduct(pool: Pool, input: CreateProductInput): Prom
     };
   };
 
-  const result = await pool.query("INSERT INTO products (name, price, stock) VALUES ($1, $2, $3) RETURNING id, name, price, stock",
+  const result = await pool.query(`INSERT INTO products (name, price, stock) VALUES ($1, $2, $3) RETURNING id, name, price, stock, "createdAt"`,
     [name, price, stock]
   );
 
@@ -43,7 +42,7 @@ export async function createProduct(pool: Pool, input: CreateProductInput): Prom
 };
 
 export async function deleteProduct(pool: Pool, id: string): Promise<Result<Product>> {
-  const result = await pool.query("DELETE FROM products WHERE id = $1 RETURNING id, name, price, stock",
+  const result = await pool.query(`DELETE FROM products WHERE id = $1 RETURNING id, name, price, stock, "createdAt"`,
     [id]
   );
 
@@ -65,7 +64,7 @@ export async function deleteProduct(pool: Pool, id: string): Promise<Result<Prod
 };
 
 export async function getProductById(pool: Pool, id: string): Promise<Result<Product>> {
-  const result = await pool.query("SELECT id, name, price, stock FROM products WHERE id = $1",
+  const result = await pool.query(`SELECT id, name, price, stock, "createdAt" FROM products WHERE id = $1`,
     [id]
   );
 
@@ -113,7 +112,7 @@ export async function updateProduct(pool: Pool, id: string, input: Partial<Updat
     };
   };
 
-  const result = await pool.query("UPDATE products SET name = COALESCE($2, name), price = COALESCE($3, price), stock = COALESCE($4, stock) WHERE id = $1 RETURNING id, name, price, stock",
+  const result = await pool.query(`UPDATE products SET name = COALESCE($2, name), price = COALESCE($3, price), stock = COALESCE($4, stock) WHERE id = $1 RETURNING id, name, price, stock, "createdAt"`,
     [id, name, price, stock]
   );
 
@@ -138,7 +137,7 @@ export async function getAllProducts(pool: Pool, limit: number, offset: number):
   const normalizedLimit = !Number.isInteger(limit) || limit <= 0 ? 10 : Math.min(limit, 100);
   const normalizedOffset = !Number.isInteger(offset) || offset < 0 ? 0 : offset;
   
-  const result = await pool.query("SELECT id, name, price, stock FROM products ORDER BY name LIMIT $1 OFFSET $2",
+  const result = await pool.query(`SELECT id, name, price, stock, "createdAt" FROM products ORDER BY name LIMIT $1 OFFSET $2`,
     [normalizedLimit, normalizedOffset]
   );
 
