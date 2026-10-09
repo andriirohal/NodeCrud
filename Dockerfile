@@ -4,11 +4,11 @@ FROM node:24
 
 # Goes to the app directory
 
-WORKDIR /src/
+WORKDIR /app/
 
 # COPY package.json and package-lock.json (if available)
 
-COPY package*.json /src/
+COPY package*.json /app/
 
 # Install app dependencies
 
