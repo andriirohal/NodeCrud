@@ -9,12 +9,12 @@ export function isValidName(name: unknown): name is string {
   return name === name.trim() && name.length > 0;
 };
 
-export function isValidPrice(price: unknown): price is string {
-  if(typeof price !== "string") {
+export function isValidPrice(price: unknown): price is number {
+  if(typeof price !== "number" || !Number.isFinite(price)) {
     return false;
   };
   
-  return Number(price) > 0 && PRICE_FORMAT.test(price);
+  return PRICE_FORMAT.test(String(price)) && price > 0;
 };
 
 export function isValidStock(stock: unknown): stock is number {

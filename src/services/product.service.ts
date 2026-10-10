@@ -5,11 +5,11 @@ import { isValidName, isValidPrice, isValidStock } from "../helpers";
 
 export async function createProduct(pool: Pool, input: CreateProductInput): Promise<Result<Product>> {
   const { name, price, stock } = input;
-  
+
   if(!isValidName(name)) {
     return {
       success: false,
-      error: "Invalid product name",
+      error: "Name must be a non-empty string without leading or trailing whitespace.",
       status: 400
     };
   };
@@ -17,7 +17,7 @@ export async function createProduct(pool: Pool, input: CreateProductInput): Prom
   if(!isValidPrice(price)) {
     return {
       success: false,
-      error: "Invalid product price",
+      error: "Price must be greater than 0 and contain at most 8 digits.",
       status: 400
     };
   };
@@ -25,7 +25,7 @@ export async function createProduct(pool: Pool, input: CreateProductInput): Prom
   if(!isValidStock(stock)) {
     return {
       success: false,
-      error: "Invalid product stock",
+      error: "Stock must be a non-negative integer.",
       status: 400
     };
   };
@@ -91,7 +91,7 @@ export async function updateProduct(pool: Pool, id: string, input: Partial<Updat
   if (input.name != null && !isValidName(name)) {
     return {
       success: false,
-      error: "Invalid product name",
+      error: "Name must be a non-empty string without leading or trailing whitespace.",
       status: 400
     };
   };
@@ -99,7 +99,7 @@ export async function updateProduct(pool: Pool, id: string, input: Partial<Updat
   if (price != null && !isValidPrice(price)) {
     return {
       success: false,
-      error: "Invalid product price",
+      error: "Price must be greater than 0 and contain at most 8 digits.",
       status: 400
     };
   };
@@ -107,7 +107,7 @@ export async function updateProduct(pool: Pool, id: string, input: Partial<Updat
   if (stock != null && !isValidStock(stock)) {
     return {
       success: false,
-      error: "Invalid product stock",
+      error: "Stock must be a non-negative integer.",
       status: 400
     };
   };

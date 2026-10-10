@@ -1,20 +1,20 @@
 export type Product = {
   id: string;
   name: string;
-  price: string;
+  price: number;
   stock: number;
   createdAt: Date;
 };
 
 export type CreateProductInput = {
   name: string;
-  price: string;
+  price: number;
   stock: number;
 };
 
 export type UpdateProductInput = {
   name: string | null;
-  price: string | null;
+  price: number | null;
   stock: number | null;
 };
 
