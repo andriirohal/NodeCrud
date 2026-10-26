@@ -37,6 +37,8 @@ A REST API built with Node.js, Express, and TypeScript, featuring a layered arch
 ## 📁 Project Structure
 
 ```text
+prisma/
+└── schema.prisma
 src/
 ├── config/
 ├── controllers/
@@ -47,9 +49,6 @@ src/
 ├── types/
 ├── app.ts
 └── server.ts
-
-prisma/
-└── schema.prisma
 
 tests/
 ```
@@ -128,7 +127,7 @@ Use the Docker connection URL inside containers and the local connection URL whe
 
 The project uses Prisma ORM to interact with PostgreSQL. The database schema is defined in `prisma/schema.prisma`.
 
-The `Product` model includes:
+The `products` model includes:
 
 - `id` — UUID primary key generated automatically.
 - `name` — required, unique product name.
@@ -148,16 +147,10 @@ The project includes automated tests covering the entire application, helping ve
 Run the test suite:
 
 ```bash
-npm test
+npm run test
 ```
 
-Run tests with coverage:
-
-```bash
-npm test -- --coverage
-```
-
-Automated testing helps catch regressions and ensures existing functionality continues to work as the application evolves.
+This runs Jest with coverage and open-handle detection using --detectOpenHandles --runInBand --coverage.
 
 ---
 
@@ -172,7 +165,7 @@ Request body:
 ```json
 {
   "name": "Laptop",
-  "price": 1399,
+  "price": 1300,
   "stock": 10
 }
 ```
@@ -183,7 +176,7 @@ Example response:
 {
   "id": "c7a2d9f4-8c1d-4a5a-8b67-1d2e3f4a5b6c",
   "name": "Laptop",
-  "price": "1399.00",
+  "price": 1300,
   "stock": 10
 }
 ```
