@@ -133,8 +133,8 @@ The `products` model includes:
 - `name` — required, unique product name.
 - `price` — product price greater than zero.
 - `stock` — non-negative inventory quantity.
-- `createdAt` — creation timestamp set automatically.
-- `updatedAt` — timestamp automatically updated when a product is modified through Prisma.
+- `created_at` — creation timestamp set automatically.
+- `updated_at` — timestamp automatically updated when a product is modified through Prisma.
 
 Prisma provides type-safe database queries and generated client methods, reducing the need to write raw SQL for routine database operations.
 
@@ -177,7 +177,9 @@ Example response:
   "id": "c7a2d9f4-8c1d-4a5a-8b67-1d2e3f4a5b6c",
   "name": "Laptop",
   "price": 1300,
-  "stock": 10
+  "stock": 10,
+  "createdAt": "2026-10-26T17:44:09.071Z",
+  "updatedAt": "2026-10-26T17:44:09.071Z"
 }
 ```
 
