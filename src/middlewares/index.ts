@@ -1,1 +1,0 @@
-export { validateId, uniqueHandler, errorHandler } from "./product.middleware";

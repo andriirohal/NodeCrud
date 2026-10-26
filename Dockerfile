@@ -1,4 +1,4 @@
-# Instructions 
+# Instructions
 
 FROM node:24
 
@@ -6,15 +6,15 @@ FROM node:24
 
 WORKDIR /app/
 
-# COPY package.json and package-lock.json (if available)
+# Copy package.json and package-lock.json (if available)
 
-COPY package*.json /app/
+COPY package.*json /app/
 
 # Install app dependencies
 
 RUN npm install
 
-# Copy the rest of our app into the container
+# Copy the rest of the app
 
 COPY . .
 
@@ -26,10 +26,10 @@ RUN npm run build
 
 ENV PORT=8080
 
-# Expose the port so our computer can access it
+# Expose the port to the host.
 
 EXPOSE 8080
 
-# RUN the app
+# RUN the application
 
 CMD ["npm", "start"]
