@@ -150,7 +150,7 @@ Run the test suite:
 npm run test
 ```
 
-This runs Jest with coverage and open-handle detection using --detectOpenHandles --runInBand --coverage.
+Runs Jest tests with coverage and detects open handles.
 
 ---
 
