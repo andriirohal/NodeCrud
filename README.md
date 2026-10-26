@@ -1,6 +1,6 @@
 # 🧩 Node CRUD
 
-A REST API built with Node.js, Express, and TypeScript, featuring a clean layered architecture, PostgreSQL persistence, and Docker Compose for containerized development.
+A REST API built with Node.js, Express, and TypeScript, featuring a layered architecture, Prisma ORM, PostgreSQL persistence, comprehensive automated tests, and Docker Compose for containerized development.
 
 ---
 
@@ -8,11 +8,14 @@ A REST API built with Node.js, Express, and TypeScript, featuring a clean layere
 
 - Get all products
 - Get product by ID
-- Create new product
+- Create a new product
 - Update product by ID
 - Delete product by ID
-- Type-safe with TypeScript
+- Type-safe development with TypeScript
+- Database access with Prisma ORM
 - PostgreSQL persistence
+- Input validation and centralized error handling
+- Automated tests across the entire project
 - Dockerized backend and database
 - Persistent PostgreSQL data with Docker volumes
 
@@ -24,7 +27,8 @@ A REST API built with Node.js, Express, and TypeScript, featuring a clean layere
 - Express
 - TypeScript
 - PostgreSQL
-- pg (node-postgres)
+- Prisma ORM
+- Jest
 - Docker
 - Docker Compose
 
@@ -32,7 +36,9 @@ A REST API built with Node.js, Express, and TypeScript, featuring a clean layere
 
 ## 📁 Project Structure
 
-```txt
+```text
+prisma/
+└── schema.prisma
 src/
 ├── config/
 ├── controllers/
@@ -43,6 +49,8 @@ src/
 ├── types/
 ├── app.ts
 └── server.ts
+
+tests/
 ```
 
 ---
@@ -51,7 +59,7 @@ src/
 
 The application uses Docker Compose to run the backend and PostgreSQL database as separate containers.
 
-```txt
+```text
 Docker Compose
 │
 ├── backend
@@ -63,7 +71,7 @@ Docker Compose
         └── port 5432
 ```
 
-The PostgreSQL database uses a Docker volume to persist data between container restarts.
+PostgreSQL uses a Docker volume to persist data between container restarts.
 
 ```yaml
 volumes:
@@ -72,64 +80,77 @@ volumes:
 
 ---
 
-## 🐳 Run with Docker
+## 🚀 Getting Started
+
+### Run with Docker
 
 Build and start the containers:
 
-```console
-docker compose up
+```bash
+docker compose up --build
 ```
 
-This starts:
-
-- Node.js backend on `http://localhost:8080`
-- PostgreSQL database on `localhost:5432`
-
-The backend connects to PostgreSQL using the Docker service name:
-
-```env
-DATABASE_URL=postgres://andrii:password@db:5432/products_db
-```
+This starts the backend at `http://localhost:8080` and PostgreSQL on port `5432`.
 
 Stop the containers:
 
-```console
+```bash
 docker compose down
 ```
 
-Stop the containers and remove the PostgreSQL volume:
+Stop the containers and remove the database volume:
 
-```console
+```bash
 docker compose down -v
 ```
 
----
+**Warning:** Removing the volume deletes the persisted PostgreSQL data.
 
-## 🗄️ Database
+### Environment Variables
 
-The PostgreSQL configuration is stored in the `.env` file:
+Configure your `.env` file with the required database credentials and connection URLs.
 
 ```env
 POSTGRES_USER=andrii
 POSTGRES_PASSWORD=password
 POSTGRES_DB=products_db
+
+DATABASE_URL=postgres://andrii:password@localhost:5432/products_db?schema=public
+DOCKER_DATABASE_URL=postgres://andrii:password@db:5432/products_db?schema=public
 ```
 
-The products table:
+Use the Docker connection URL inside containers and the local connection URL when running the backend directly on your machine. Keep your actual `.env` file out of version control.
 
-```sql
-CREATE TABLE products (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
-  price NUMERIC(10, 2) NOT NULL CHECK (price > 0),
-  stock INTEGER NOT NULL CHECK (stock >= 0),
-  "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT products_name_unique UNIQUE (name),
-  CONSTRAINT products_name_check CHECK (
-    char_length(name) > 0 AND name = TRIM(name)
-  )
-);
+---
+
+## 🗄️ Database
+
+The project uses Prisma ORM to interact with PostgreSQL. The database schema is defined in `prisma/schema.prisma`.
+
+The `products` model includes:
+
+- `id` — UUID primary key generated automatically.
+- `name` — required, unique product name.
+- `price` — product price greater than zero.
+- `stock` — non-negative inventory quantity.
+- `created_at` — creation timestamp set automatically.
+- `updated_at` — timestamp automatically updated when a product is modified through Prisma.
+
+Prisma provides type-safe database queries and generated client methods, reducing the need to write raw SQL for routine database operations.
+
+---
+
+## 🧪 Testing
+
+The project includes automated tests covering the entire application, helping verify business logic, input validation, error handling, and API behavior.
+
+Run the test suite:
+
+```bash
+npm run test
 ```
+
+Runs Jest tests with coverage and detects open handles.
 
 ---
 
@@ -137,10 +158,14 @@ CREATE TABLE products (
 
 ### Create Product
 
+**POST** `/products`
+
+Request body:
+
 ```json
 {
   "name": "Laptop",
-  "price": 1399,
+  "price": 1300,
   "stock": 10
 }
 ```
@@ -151,7 +176,15 @@ Example response:
 {
   "id": "c7a2d9f4-8c1d-4a5a-8b67-1d2e3f4a5b6c",
   "name": "Laptop",
-  "price": "1399.00",
-  "stock": 10
+  "price": 1300,
+  "stock": 10,
+  "createdAt": "2026-10-26T17:44:09.071Z",
+  "updatedAt": "2026-10-26T17:44:09.071Z"
 }
 ```
+
+---
+
+## 🎯 Project Goals
+
+This project demonstrates practical backend development skills, including REST API design, layered architecture, database modeling, ORM usage, automated testing, error handling, and containerized development.
