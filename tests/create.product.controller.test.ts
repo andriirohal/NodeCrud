@@ -49,6 +49,36 @@ test("creates a product", async () => {
   expect(next).not.toHaveBeenCalled();
 });
 
+test("rejects an invalid name", async () => {
+  jest.mocked(createProduct).mockResolvedValue({
+    success: false,
+    error: "Name cannot be empty",
+    status: 400
+  });
+
+  const req = {
+    body: {
+      name: "",
+      price: 2000,
+      stock: 200
+    }
+  } as Request<{}, {}, CreateProductInput>;
+
+  const res = {
+    json: jest.fn(),
+    status: jest.fn().mockReturnThis()
+  } as unknown as Response;
+
+  const next = jest.fn() as NextFunction;
+
+  await createProductController(req, res, next);
+
+  expect(res.json).toHaveBeenCalled();
+  expect(res.status).toHaveBeenCalledWith(400);
+
+  expect(next).not.toHaveBeenCalled();
+});
+
 test("passes the error to the next handler", async () => {
   const req = {} as Request<{}, {}, CreateProductInput>;
 

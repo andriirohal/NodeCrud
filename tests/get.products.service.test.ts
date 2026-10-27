@@ -4,12 +4,6 @@ import { getProducts, createProduct } from "../src/services/product.service.js";
 
 test("gets products", async () => {
   await createProduct({
-    name: "Samsung galaxy S24",
-    price: 1000,
-    stock: 140
-  });
-
-  await createProduct({
     name: "Samsung galaxy S25 Ultra",
     price: 1800,
     stock: 230

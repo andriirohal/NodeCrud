@@ -104,11 +104,7 @@ export async function deleteProduct(id: string): Promise<Result<Product>> {
       };
     };
 
-    return {
-      success: false,
-      error: "Internal server error",
-      status: 500
-    };
+    throw error;
   };
 };
 
@@ -222,11 +218,7 @@ export async function updateProduct(id: string, input: Partial<UpdateProductInpu
       };
     };
 
-    return {
-      success: false,
-      error: "Internal server error",
-      status: 500
-    };
+    throw error;
   };
 };
 

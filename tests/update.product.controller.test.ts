@@ -52,7 +52,41 @@ test("updates a product", async () => {
   expect(next).not.toHaveBeenCalled();
 });
 
-test("passes the error to the next handler", async () => {
+test("rejects missing product", async () => {
+  jest.mocked(updateProduct).mockResolvedValue({
+    success: false,
+    error: "Product not found",
+    status: 404
+  });
+
+  const req = {
+    params: {
+      id: "a1b2c3d4-e5f6-4789-8123-456789abcdef"
+    },
+
+    body: {
+      name: "Samsung galaxy S26 Ultra",
+      price: 2000,
+      stock: 300 
+    }
+  } as Request<{ id: string }, {}, UpdateProductInput>;
+
+  const res = {
+    json: jest.fn(),
+    status: jest.fn().mockReturnThis()
+  } as unknown as Response;
+
+  const next = jest.fn() as NextFunction;
+
+  await updateProductController(req, res, next);
+
+  expect(res.json).toHaveBeenCalled();
+  expect(res.status).toHaveBeenCalledWith(404);
+
+  expect(next).not.toHaveBeenCalled();
+});
+
+test("passes an error to the next handler", async () => {
   const req = {} as Request<{ id: string }, {}, UpdateProductInput>;
   const res = {} as Response;
 

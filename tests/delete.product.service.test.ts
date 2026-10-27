@@ -30,12 +30,3 @@ test("rejects missing product", async () => {
   expect(response.success).toBe(false);
   expect(response.status).toBe(404);
 });
-
-test("returns an internal server error", async () => {
-  jest.spyOn(client.products, "delete").mockRejectedValue(new Error("Database error"));
-
-  const response = await deleteProduct("7f3a9c2e-6b41-4d85-9a72-e1c6b0f4583d");
-
-  expect(response.success).toBe(false);
-  expect(response.status).toBe(500);
-});

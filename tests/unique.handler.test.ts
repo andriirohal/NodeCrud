@@ -28,7 +28,7 @@ test("rejects a product with an existing name", () => {
   expect(next).not.toHaveBeenCalled();
 });
 
-test("passes the error to the next handler", () => {
+test("passes an error to the next handler", () => {
   const error = {} as unknown;
   const req = {} as Request;
 
