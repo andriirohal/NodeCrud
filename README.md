@@ -111,8 +111,8 @@ docker compose down -v
 Configure your `.env` file with the required database credentials and connection URLs.
 
 ```env
-DATABASE_URL=postgres://andrii:password@localhost:5432/products_db?schema=public
-DOCKER_DATABASE_URL=postgres://andrii:password@db:5432/products_db?schema=public
+LOCAL_DATABASE_URL=postgres://andrii:password@localhost:5432/products_db
+DOCKER_DATABASE_URL=postgres://andrii:password@db:5432/products_db
 
 POSTGRES_USER=andrii
 POSTGRES_PASSWORD=password
