@@ -1,9 +1,11 @@
-import type { Pool } from "pg";
+import { Prisma } from "@prisma/client";
 
-import type { Product, CreateProductInput, UpdateProductInput, Result } from "../types";
-import { isValidName, isValidPrice, isValidStock } from "../helpers";
+import type { Product, CreateProductInput, UpdateProductInput, Result } from "../types/product.types.js";
+import { isValidName, isValidPrice, isValidStock, normalizedLimit, normalizedOffset } from "../helpers/product.helper.js";
 
-export async function createProduct(pool: Pool, input: CreateProductInput): Promise<Result<Product>> {
+import { client } from "../prisma/client.js";
+
+export async function createProduct(input: CreateProductInput): Promise<Result<Product>> {
   const { name, price, stock } = input;
 
   if(!isValidName(name)) {
@@ -30,23 +32,100 @@ export async function createProduct(pool: Pool, input: CreateProductInput): Prom
     };
   };
 
-  const result = await pool.query(`INSERT INTO products (name, price, stock) VALUES ($1, $2, $3) RETURNING id, name, price, stock, "createdAt"`,
-    [name, price, stock]
-  );
+  const product = await client.products.create({
+    data: {
+      name,
+      price,
+      stock
+    },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      stock: true,
+      created_at: true,
+      updated_at: true
+    }
+  });
+
+  const response = {
+    id: product.id,
+    name: product.name,
+    price: Number(product.price),
+    stock: product.stock,
+    createdAt: product.created_at,
+    updatedAt: product.updated_at
+  };
 
   return {
     success: true,
-    data: result.rows[0],
+    data: response,
     status: 201
   };
 };
 
-export async function deleteProduct(pool: Pool, id: string): Promise<Result<Product>> {
-  const result = await pool.query(`DELETE FROM products WHERE id = $1 RETURNING id, name, price, stock, "createdAt"`,
-    [id]
-  );
+export async function deleteProduct(id: string): Promise<Result<Product>> {
+  try {
+    const product = await client.products.delete({
+      where: {
+        id
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        stock: true,
+        created_at: true,
+        updated_at: true
+      }
+    });
 
-  const product = result.rows[0];
+    const response = {
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      stock: product.stock,
+      createdAt: product.created_at,
+      updatedAt: product.updated_at
+    };
+
+    return {
+      success: true,
+      data: response,
+      status: 200
+    };
+
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return {
+        success: false,
+        error: "Product not found",
+        status: 404
+      };
+    };
+
+    return {
+      success: false,
+      error: "Internal server error",
+      status: 500
+    };
+  };
+};
+
+export async function getProduct(id: string): Promise<Result<Product>> {
+  const product = await client.products.findUnique({
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      stock: true,
+      created_at: true,
+      updated_at: true
+    },
+    where: {
+      id
+    }
+  });
 
   if (!product) {
     return {
@@ -56,94 +135,132 @@ export async function deleteProduct(pool: Pool, id: string): Promise<Result<Prod
     };
   };
 
-  return {
-    success: true,
-    data: product,
-    status: 200
-  };
-};
-
-export async function getProductById(pool: Pool, id: string): Promise<Result<Product>> {
-  const result = await pool.query(`SELECT id, name, price, stock, "createdAt" FROM products WHERE id = $1`,
-    [id]
-  );
-
-  const product = result.rows[0];
-
-  if (!product) {
-    return {
-      success: false,
-      error: "Product not found",
-      status: 404
-    };
+  const response = {
+    id: product.id,
+    name: product.name,
+    price: Number(product.price),
+    stock: product.stock,
+    createdAt: product.created_at,
+    updatedAt: product.updated_at
   };
 
   return {
     success: true,
-    data: product,
+    data: response,
     status: 200
   };
 };
 
-export async function updateProduct(pool: Pool, id: string, input: Partial<UpdateProductInput>): Promise<Result<Product>> {
-  const { name, price, stock } = input;
-
-  if (input.name != null && !isValidName(name)) {
-    return {
-      success: false,
-      error: "Name must be a non-empty string without leading or trailing whitespace.",
-      status: 400
-    };
-  };
-
-  if (price != null && !isValidPrice(price)) {
-    return {
-      success: false,
-      error: "Price must be greater than 0 and contain at most 8 digits.",
-      status: 400
-    };
-  };
-
-  if (stock != null && !isValidStock(stock)) {
-    return {
-      success: false,
-      error: "Stock must be a non-negative integer.",
-      status: 400
-    };
-  };
-
-  const result = await pool.query(`UPDATE products SET name = COALESCE($2, name), price = COALESCE($3, price), stock = COALESCE($4, stock) WHERE id = $1 RETURNING id, name, price, stock, "createdAt"`,
-    [id, name, price, stock]
-  );
-
-  const product = result.rows[0];
-
-  if (!product) {
-    return {
-      success: false,
-      error: "Product not found",
-      status: 404
-    };
-  };
-
-  return {
-    success: true,
-    data: product,
-    status: 200
-  };
-};
-
-export async function getAllProducts(pool: Pool, limit: number, offset: number): Promise<Result<Product[]>> {
-  const normalizedLimit = !Number.isInteger(limit) || limit <= 0 ? 10 : Math.min(limit, 100);
-  const normalizedOffset = !Number.isInteger(offset) || offset < 0 ? 0 : offset;
+export async function updateProduct(id: string, input: Partial<UpdateProductInput>): Promise<Result<Product>> {
+  try {
+    const { name, price, stock } = input;
   
-  const result = await pool.query(`SELECT id, name, price, stock, "createdAt" FROM products ORDER BY name LIMIT $1 OFFSET $2`,
-    [normalizedLimit, normalizedOffset]
-  );
+    if (input.name != null && !isValidName(name)) {
+      return {
+        success: false,
+        error: "Name must be a non-empty string without leading or trailing whitespace.",
+        status: 400
+      };
+    };
+  
+    if (price != null && !isValidPrice(price)) {
+      return {
+        success: false,
+        error: "Price must be greater than 0 and contain at most 8 digits.",
+        status: 400
+      };
+    };
+  
+    if (stock != null && !isValidStock(stock)) {
+      return {
+        success: false,
+        error: "Stock must be a non-negative integer.",
+        status: 400
+      };
+    };
+  
+    const product = await client.products.update({
+      data: {
+        name: name ?? undefined,
+        price: price ?? undefined,
+        stock: stock ?? undefined
+      },
+      where: {
+        id
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        stock: true,
+        created_at: true,
+        updated_at: true
+      }
+    });
+
+    const response = {
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      stock: product.stock,
+      createdAt: product.created_at,
+      updatedAt: product.updated_at
+    };
+
+    return {
+      success: true,
+      data: response,
+      status: 200
+    };
+
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return {
+        success: false,
+        error: "Product not found",
+        status: 404
+      };
+    };
+
+    return {
+      success: false,
+      error: "Internal server error",
+      status: 500
+    };
+  };
+};
+
+export async function getProducts(limit: number, offset: number): Promise<Result<Product[]>> {  
+  const products = await client.products.findMany({
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      stock: true,
+      created_at: true,
+      updated_at: true
+    },
+    orderBy: {
+      name: "asc"
+    },
+    take: normalizedLimit(limit),
+    skip: normalizedOffset(offset)
+  });
+
+  const response = products.map((product) => {
+    return {
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      stock: product.stock,
+      createdAt: product.created_at,
+      updatedAt: product.updated_at
+    };
+  });
 
   return {
     success: true,
-    data: result.rows,
+    data: response,
     status: 200
   };
 };

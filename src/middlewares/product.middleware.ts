@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import type { Request, Response, NextFunction } from "express";
 
 import validator from "validator";
@@ -17,12 +18,7 @@ export function validateId(req: Request<{ id: string }>, res: Response, next: Ne
 };
 
 export function uniqueHandler(error: unknown, _req: Request, res: Response, next: NextFunction) {
-  const err = error as { 
-    code?: string;
-    constraint?: string;
-  };
-
-  if(err.code === "23505" && err.constraint === "products_name_unique") {
+  if(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
     return res.status(409).json({
       success: false,
       error: "A product with this name already exists",

@@ -1,16 +1,14 @@
 import type { Request, Response, NextFunction } from "express";
 
-import * as services from "../services";
-import { pool } from "../config";
+import * as services from "../services/product.service.js";
+import type { CreateProductInput, UpdateProductInput } from "../types/product.types.js";
 
-import type { CreateProductInput, UpdateProductInput } from "../types";
-
-export async function getProductByIdController(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+export async function getProductController(req: Request<{ id: string }>, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
 
-    const result = await services.getProductById(pool, id);
-    return res.status(result.status).json(result);
+    const response = await services.getProduct(id);
+    return res.status(response.status).json(response);
   
   } catch(error) {
     next(error);
@@ -19,8 +17,8 @@ export async function getProductByIdController(req: Request<{ id: string }>, res
 
 export async function createProductController(req: Request<{}, {}, CreateProductInput>, res: Response, next: NextFunction) {
   try {
-    const result = await services.createProduct(pool, req.body);
-    return res.status(result.status).json(result);
+    const response = await services.createProduct(req.body);
+    return res.status(response.status).json(response);
   
   } catch(error) {
     next(error);
@@ -31,8 +29,8 @@ export async function deleteProductController(req: Request<{ id: string }>, res:
   try {
     const { id } = req.params;
 
-    const result = await services.deleteProduct(pool, id);
-    return res.status(result.status).json(result);
+    const response = await services.deleteProduct(id);
+    return res.status(response.status).json(response);
   
   } catch(error) {
     next(error);
@@ -43,21 +41,21 @@ export async function updateProductController(req: Request<{ id: string }, {}, U
   try {
     const { id } = req.params;
 
-    const result = await services.updateProduct(pool, id, req.body);
-    return res.status(result.status).json(result);
+    const repsonse = await services.updateProduct(id, req.body);
+    return res.status(repsonse.status).json(repsonse);
   
   } catch(error) {
     next(error);
   };
 };
 
-export async function getAllProductsController(req: Request, res: Response, next: NextFunction) {
+export async function getProductsController(req: Request<{}, {}, {}, { limit: number, offset: number }>, res: Response, next: NextFunction) {
   try {
-    const limit = Number(req.query.limit);
-    const offset = Number(req.query.offset);
+    const limit = req.query.limit;
+    const offset = req.query.offset;
 
-    const result = await services.getAllProducts(pool, limit, offset);   
-    return res.status(result.status).json(result);
+    const response = await services.getProducts(limit, offset);   
+    return res.status(response.status).json(response);
   
   } catch(error) {
     next(error);

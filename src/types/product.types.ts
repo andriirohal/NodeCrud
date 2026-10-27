@@ -4,6 +4,7 @@ export type Product = {
   price: number;
   stock: number;
   createdAt: Date;
+  updatedAt: Date;
 };
 
 export type CreateProductInput = {

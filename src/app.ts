@@ -1,9 +1,10 @@
 import express from "express";
 import type { Request, Response } from "express";
+
 import cors from "cors";
 
-import { errorHandler, uniqueHandler } from "./middlewares";
-import { router } from "./routes";
+import { errorHandler, uniqueHandler } from "./middlewares/product.middleware.js";
+import { router } from "./routes/product.routes.js";
 
 export const app = express();
 
